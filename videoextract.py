@@ -17,7 +17,7 @@ def getImages(path, printStatus=False, crop=None, frameskip = FRAME_GAP):
             break
         if count % frameskip == 0:
             if printStatus:
-                print(f'captured image {count}')
+                print(f'captured image {count // frameskip}')
             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
             im_pil = Image.fromarray(image)
             if(crop):
