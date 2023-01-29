@@ -2,30 +2,32 @@ from PIL import Image
 from pianorollutils import alignOffset, polystitch
 from pathlib import Path
 import re
+import argparse
+
 
 from videoextract import getImages
 
-STANDARD_CROP = (0,0,1920, 512)
 
-## Standard Pipeline:
-
-## 1. Extract video frames (video -> frames)
-
-## 2. Crop video frames (frames -> frames)
-
-## 3. Stitch frames
 
 def pathSort(p1):
     result = re.search('(\d+)', p1.name)
-    print(result)
     return int(result.group(1))
 
-# paths = [p for p in Path('frames').iterdir()]
-# paths.sort(key=pathSort)
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-i', '--input', type=str, required=True)
+    parser.add_argument('-o','--output', type=str)
+    parser.add_argument('-f','--frameskip', type=int)
+    args = parser.parse_args()
+    videoFile = Path(args.input)
+    
+    outFile = args.output if args.output else "combined.png"
+    frameskip = args.frameskip if args.frameskip else 30
 
-# images = [Image.open(p).crop(STANDARD_CROP) for p in paths]
+    if(not videoFile.exists()):
+        print("File does not exist: "+str(videoFile.as_posix()))
+        exit(1)
 
-videoFile = next(Path('video').iterdir())
+    images = getImages(videoFile, True, crop=True, frameskip=frameskip)
+    polystitch(images, printStatus=True).save(outFile)
 
-images = getImages(videoFile, True, crop=STANDARD_CROP)
-polystitch(images, printStatus=True).save('combined.png')
