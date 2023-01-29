@@ -73,7 +73,7 @@ def alignOffset(im1, im2):
     return hiscorer
 
 
-GMRO_SAMPLES = 6
+GMRO_SAMPLES = 5
 
 def getMedianRandomOffset(images):
     samples = []
@@ -96,13 +96,16 @@ def stitch(im1, im2, offset=None):
     return out
 
 def polystitch(images, printStatus=False):
-    current = images[0]
+    assert(images != None)
+    assert(len(images) > 0)
     offset = getMedianRandomOffset(images)
     print(f'Median offset: {offset}')
-    count = 1
-    for image in images[1:]:
+    count = 0
+    out = Image.new(mode="RGB", size=(images[0].size[0], images[0].size[1] + offset * (len(images)-1)))
+    print(out.size)
+    for image in images[::-1]:
+        out.paste(image, (0, offset * count))
         count+=1
         if printStatus:
             print(f'Stitching image {count}')
-        current = stitch(current, image, offset)
-    return current
+    return out
