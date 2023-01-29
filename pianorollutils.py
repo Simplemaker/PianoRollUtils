@@ -95,10 +95,14 @@ def stitch(im1, im2, offset=None):
     out.paste(im1, (0, offset))
     return out
 
-def polystitch(images):
+def polystitch(images, printStatus=False):
     current = images[0]
     offset = getMedianRandomOffset(images)
     print(f'Median offset: {offset}')
+    count = 1
     for image in images[1:]:
+        count+=1
+        if printStatus:
+            print(f'Stitching image {count}')
         current = stitch(current, image, offset)
     return current

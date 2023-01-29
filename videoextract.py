@@ -1,19 +1,25 @@
 import cv2
 from pathlib import Path
+from PIL import Image
 
-## Just get the first video in video folder
-file = [f for f in Path('video').iterdir()][0] 
-
-vc = cv2.VideoCapture(file.as_posix())
 
 FRAME_GAP = 30
-count = 0
-while True:
-    success,image = vc.read()
-    if not success:
-        break
-    if count % FRAME_GAP == 0:
-        p = (Path('frames') / "frame{:d}.png".format(count))
 
-        cv2.imwrite(p.as_posix(), image)     # save frame as JPEG file
-    count += 1
+def getImages(path, printStatus=False, crop=None):
+    vc = cv2.VideoCapture(path.as_posix())
+    images = []
+    count = 0
+    while True:
+        success,image = vc.read()
+        if not success:
+            break
+        if count % FRAME_GAP == 0:
+            if printStatus:
+                print(f'captured image {count}')
+            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+            im_pil = Image.fromarray(image)
+            if(crop):
+                im_pil = im_pil.crop(crop)
+            images.append(im_pil)
+        count += 1
+    return images

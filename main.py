@@ -3,6 +3,8 @@ from pianorollutils import alignOffset, polystitch
 from pathlib import Path
 import re
 
+from videoextract import getImages
+
 STANDARD_CROP = (0,0,1920, 512)
 
 ## Standard Pipeline:
@@ -18,8 +20,12 @@ def pathSort(p1):
     print(result)
     return int(result.group(1))
 
-paths = [p for p in Path('frames').iterdir()]
-paths.sort(key=pathSort)
+# paths = [p for p in Path('frames').iterdir()]
+# paths.sort(key=pathSort)
 
-images = [Image.open(p).crop(STANDARD_CROP) for p in paths]
-polystitch(images).save('combined.png')
+# images = [Image.open(p).crop(STANDARD_CROP) for p in paths]
+
+videoFile = next(Path('video').iterdir())
+
+images = getImages(videoFile, True, crop=STANDARD_CROP)
+polystitch(images, printStatus=True).save('combined.png')
