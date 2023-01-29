@@ -1,4 +1,5 @@
 from PIL import Image
+from imagepreview import imagePreview
 from pianorollutils import alignOffset, polystitch
 from pathlib import Path
 import re
@@ -18,6 +19,7 @@ if __name__ == "__main__":
     parser.add_argument('-i', '--input', type=str, required=True)
     parser.add_argument('-o','--output', type=str)
     parser.add_argument('-f','--frameskip', type=int)
+    parser.add_argument('-s','--skipframes', action='store_true')
     args = parser.parse_args()
     videoFile = Path(args.input)
     
@@ -29,5 +31,11 @@ if __name__ == "__main__":
         exit(1)
 
     images = getImages(videoFile, True, crop=True, frameskip=frameskip)
+    
+    if args.skipframes:
+        imagePreview(images)
+        skip = int(input("# of images to skip: "))
+        images = images[skip:]
+    
     polystitch(images, printStatus=True).save(outFile)
 
